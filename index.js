@@ -3,6 +3,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import sequelize from "./config/db.js"; // 🔥 YAHI SAHI IMPORT HAI
 
+// IMPORT
+import authRoutes from "./routes/auth.routes.js";
+
+
 dotenv.config();
 
 const app = express();
@@ -13,6 +17,11 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.json("Hello World !");
 });
+
+// ✅ ROUTES
+app.use("/api/auth", authRoutes);
+
+
 
 // ✅ DB CONNECT & SYNC
 sequelize
