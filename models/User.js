@@ -4,8 +4,8 @@ import sequelize from "../config/db.js";
 const User = sequelize.define("User", {
   id: {
     type: DataTypes.INTEGER,
-    primaryKey: true,
     autoIncrement: true,
+    primaryKey: true,
   },
 
   name: {
@@ -26,17 +26,23 @@ const User = sequelize.define("User", {
 
   businessName: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true, // customer ke liye null
   },
 
   role: {
-    type: DataTypes.ENUM("vendor", "event-planner", "freelance-planner"),
+    type: DataTypes.ENUM(
+      "customer",
+      "vendor",
+      "event-planner",
+      "freelance-planner"
+    ),
     allowNull: false,
+    defaultValue: "customer",
   },
-
 }, {
   tableName: "users",
   timestamps: true,
 });
+
 
 export default User;
