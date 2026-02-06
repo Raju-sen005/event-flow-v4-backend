@@ -9,3 +9,10 @@ export const authorizeRoles = (...roles) => {
     next();
   };
 };
+
+export const authorizeVendor = (req, res, next) => {
+  if (req.user.role !== "vendor") {
+    return res.status(403).json({ message: "Only vendors allowed" });
+  }
+  next();
+};

@@ -8,7 +8,9 @@ import "./models/index.js"
 import authRoutes from "./routes/auth.routes.js";
 import customerProfileRoutes from "./routes/customer/profile.routes.js";
 import vendorProfileRoutes from "./routes/vendors/profile.routes.js";
-
+import vendorPortfolioRoutes from "./routes/vendors/portfolio.routes.js"
+import admin from "./routes/admin/adminRoutes.js";
+import eventRoutes from "./routes/eventRoutes.js";
 
 dotenv.config();
 
@@ -25,8 +27,9 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/customer/profile", customerProfileRoutes);
 app.use("/api/vendor/profile", vendorProfileRoutes);
-
-
+app.use("/api/portfolio", vendorPortfolioRoutes)
+app.use("/api/admin", admin);
+app.use("/api/events", eventRoutes);
 
 // ✅ DB CONNECT & SYNC
 sequelize
