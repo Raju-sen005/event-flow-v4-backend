@@ -11,6 +11,9 @@ import vendorProfileRoutes from "./routes/vendors/profile.routes.js";
 import vendorPortfolioRoutes from "./routes/vendors/portfolio.routes.js"
 import admin from "./routes/admin/adminRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
+import vendorPackageRoutes from "./routes/vendors/package.routes.js";
+import guestRoutes from "./routes/guestRoutes.js";
+import bidRoutes from "./routes/bidRoutes.js";
 
 dotenv.config();
 
@@ -30,7 +33,9 @@ app.use("/api/vendor/profile", vendorProfileRoutes);
 app.use("/api/portfolio", vendorPortfolioRoutes)
 app.use("/api/admin", admin);
 app.use("/api/events", eventRoutes);
-
+app.use("/api/vendor/packages", vendorPackageRoutes);
+app.use("/api/guests", guestRoutes);
+app.use("/api/bids", bidRoutes);
 // ✅ DB CONNECT & SYNC
 sequelize
   .sync()

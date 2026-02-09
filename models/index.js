@@ -3,7 +3,8 @@ import CustomerProfile from "./customerProfile.js";
 import VendorProfile from "./VendorProfile.js";
 import Event from "./event.js";
 import EventService from "./eventService.js";
-
+import Guest from "./guest.js";
+import Bid from "./bid.js";
 /* =======================
    ASSOCIATIONS
 ======================= */
@@ -64,3 +65,29 @@ export {
   Event,
   EventService
 };
+
+
+
+Event.hasMany(Guest, {
+  foreignKey: "event_id",
+  as: "guests",
+  onDelete: "CASCADE",
+});
+
+Guest.belongsTo(Event, {
+  foreignKey: "event_id",
+});
+
+
+
+User.hasMany(Bid, { foreignKey: "vendor_id" });
+Bid.belongsTo(User, { foreignKey: "vendor_id", as: "vendor" });
+
+Event.hasMany(Bid, {
+  foreignKey: "event_id",
+  onDelete: "CASCADE",
+});
+
+Bid.belongsTo(Event, {
+  foreignKey: "event_id",
+});
