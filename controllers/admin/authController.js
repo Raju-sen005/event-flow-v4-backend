@@ -1,4 +1,4 @@
-import Admin from "../../models/admin.model.js";
+import Admin from "../../models/admin/admin.js";
 import bcrypt from "bcrypt";
 
 const register = async (req, res) => {

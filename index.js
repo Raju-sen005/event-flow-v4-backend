@@ -2,7 +2,18 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import sequelize from "./config/db.js"; // 🔥 YAHI SAHI IMPORT HAI
-import admin from "./routes/adminRoute.js";
+
+import "./models/index.js"
+// IMPORT
+import authRoutes from "./routes/auth.routes.js";
+import customerProfileRoutes from "./routes/customer/profile.routes.js";
+import vendorProfileRoutes from "./routes/vendors/profile.routes.js";
+import vendorPortfolioRoutes from "./routes/vendors/portfolio.routes.js"
+import admin from "./routes/admin/adminRoutes.js";
+import eventRoutes from "./routes/eventRoutes.js";
+import vendorPackageRoutes from "./routes/vendors/package.routes.js";
+import guestRoutes from "./routes/guestRoutes.js";
+import bidRoutes from "./routes/bidRoutes.js";
 
 dotenv.config();
 
@@ -12,14 +23,22 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json("Hello World !");
+  res.json("API is working..!");
 });
 
-app.use("/admin", admin);
-
+// ✅ ROUTES
+app.use("/api/auth", authRoutes);
+app.use("/api/customer/profile", customerProfileRoutes);
+app.use("/api/vendor/profile", vendorProfileRoutes);
+app.use("/api/portfolio", vendorPortfolioRoutes)
+app.use("/api/admin", admin);
+app.use("/api/events", eventRoutes);
+app.use("/api/vendor/packages", vendorPackageRoutes);
+app.use("/api/guests", guestRoutes);
+app.use("/api/bids", bidRoutes);
 // ✅ DB CONNECT & SYNC
 sequelize
-  .sync({ alter: true })
+  .sync()
   .then(() => {
     console.log("Database connected & synced");
   })

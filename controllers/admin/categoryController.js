@@ -1,4 +1,4 @@
-import { Category, SubCategory } from "../../models/index.js";
+import { Category, SubCategory } from "../../models/admin/index.js";
 
 const createCategory = async (req, res) => {
   try {
