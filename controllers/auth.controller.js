@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-
+import Vendor from "../models/Vendor.js"; // add this
 const generateToken = (user) => {
   return jwt.sign(
     { id: user.id, role: user.role },
@@ -67,6 +67,15 @@ export const register = async (req, res) => {
       role,
       businessName
     });
+
+    // 🔥 ADD THIS BLOCK
+if (role === "vendor") {
+  await Vendor.create({
+    userId: user.id,
+    name: businessName,   // or name
+    category: "general"   // default category (change as needed)
+  });
+}
 
     const token = generateToken(user);
 

@@ -5,6 +5,13 @@ import Event from "./event.js";
 import EventService from "./eventService.js";
 import Guest from "./guest.js";
 import Bid from "./bid.js";
+// import VendorProfile from "./VendorProfile.js";
+import Package from "./Package.js";
+import Portfolio from "./Portfolio.js";
+import Vendor from "./Vendor.js";
+import VendorKYC from "./VendorKYC.js";
+
+// import User from "./User.js";
 /* =======================
    ASSOCIATIONS
 ======================= */
@@ -63,6 +70,8 @@ export {
   CustomerProfile,
   VendorProfile,
   Event,
+  Package,
+  Portfolio,
   EventService
 };
 
@@ -91,3 +100,39 @@ Event.hasMany(Bid, {
 Bid.belongsTo(Event, {
   foreignKey: "event_id",
 });
+
+
+/**
+ * VendorProfile ↔ Packages
+ */
+VendorProfile.hasMany(Package, {
+  foreignKey: "vendor_id",
+  as: "packages"
+});
+
+Package.belongsTo(VendorProfile, {
+  foreignKey: "vendor_id",
+  as: "vendor"
+});
+
+/**
+ * VendorProfile ↔ Portfolio (via userId)
+ */
+VendorProfile.hasMany(Portfolio, {
+  foreignKey: "userId",
+  sourceKey: "userId",
+  as: "portfolios"
+});
+
+Portfolio.belongsTo(VendorProfile, {
+  foreignKey: "userId",
+  targetKey: "userId",
+  as: "vendorProfile"
+});
+
+
+Vendor.hasOne(VendorKYC, { foreignKey: "vendorId" });
+VendorKYC.belongsTo(Vendor, { foreignKey: "vendorId" });
+
+User.hasOne(Vendor, { foreignKey: "userId" });
+Vendor.belongsTo(User, { foreignKey: "userId" });
