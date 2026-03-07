@@ -6,7 +6,7 @@ import Package from "../../models/Package.js";
  */
 export const createPackage = async (req, res) => {
   try {
-    const vendor_id = 5; // 🔐 JWT se aayega later
+    const vendor_id = req.user.id; // 🔐 JWT se aayega later
 
     const {
       name,
@@ -48,7 +48,7 @@ export const createPackage = async (req, res) => {
  */
 export const getPackages = async (req, res) => {
   try {
-    const vendor_id = 5;
+    const vendor_id = req.user.id;
 
     const packages = await Package.findAll({
       where: { vendor_id },
@@ -72,7 +72,7 @@ export const getPackages = async (req, res) => {
  */
 export const updatePackage = async (req, res) => {
   try {
-    const vendor_id = 5;
+    const vendor_id = req.user.id;
     const { id } = req.params;
 
     const [updated] = await Package.update(req.body, {
@@ -97,7 +97,7 @@ export const updatePackage = async (req, res) => {
  */
 export const deletePackage = async (req, res) => {
   try {
-    const vendor_id = 5;
+    const vendor_id = req.user.id;
     const { id } = req.params;
 
     await Package.destroy({
@@ -118,7 +118,7 @@ export const deletePackage = async (req, res) => {
  */
 export const togglePackageStatus = async (req, res) => {
   try {
-    const vendor_id = 5;
+    const vendor_id = req.user.id;
     const { id } = req.params;
 
     const pkg = await Package.findOne({ where: { id, vendor_id } });
