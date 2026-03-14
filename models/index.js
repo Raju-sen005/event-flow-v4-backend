@@ -10,6 +10,8 @@ import Package from "./Package.js";
 import Portfolio from "./Portfolio.js";
 import Vendor from "./Vendor.js";
 import VendorKYC from "./VendorKYC.js";
+import Negotiation from "./Negotiation.js";
+import NegotiationOffer from "./NegotiationOffer.js";
 
 // import User from "./User.js";
 /* =======================
@@ -136,3 +138,20 @@ VendorKYC.belongsTo(Vendor, { foreignKey: "vendorId" });
 
 User.hasOne(Vendor, { foreignKey: "userId" });
 Vendor.belongsTo(User, { foreignKey: "userId" });
+
+Bid.hasOne(Negotiation, {
+  foreignKey: "bid_id"
+});
+
+Negotiation.belongsTo(Bid, {
+  foreignKey: "bid_id"
+});
+
+Negotiation.hasMany(NegotiationOffer, {
+  foreignKey: "negotiation_id",
+  as: "offers"
+});
+
+NegotiationOffer.belongsTo(Negotiation, {
+  foreignKey: "negotiation_id"
+});

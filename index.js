@@ -17,6 +17,9 @@ import bidRoutes from "./routes/bidRoutes.js";
 import vendorRoutes from "./routes/vendor.routes.js";
 import vendorKYCRoutes from "./routes/vendors/kyc.routes.js";
 import adminKYCRoutes from "./routes/admin/kyc.admin.routes.js";
+import questionRoutes from "./routes/questionRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -43,7 +46,8 @@ app.use("/api/bids", bidRoutes);
 app.use('/api/vendors', vendorRoutes);
 app.use("/api/vendor/kyc", vendorKYCRoutes);
 app.use("/api/admin/kyc", adminKYCRoutes);
-
+app.use("/api/questions", questionRoutes);
+app.use("/api/messages", messageRoutes);
 // ✅ DB CONNECT & SYNC
 sequelize
   .sync()
