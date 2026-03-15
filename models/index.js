@@ -12,7 +12,7 @@ import Vendor from "./Vendor.js";
 import VendorKYC from "./VendorKYC.js";
 import Negotiation from "./Negotiation.js";
 import NegotiationOffer from "./NegotiationOffer.js";
-
+import Payment from "./payment.model.js";
 // import User from "./User.js";
 /* =======================
    ASSOCIATIONS
@@ -154,4 +154,44 @@ Negotiation.hasMany(NegotiationOffer, {
 
 NegotiationOffer.belongsTo(Negotiation, {
   foreignKey: "negotiation_id"
+});
+
+
+
+/* =======================
+   PAYMENT ASSOCIATIONS
+======================= */
+
+Event.hasMany(Payment, {
+  foreignKey: "eventId",
+  as: "payments"
+});
+
+Payment.belongsTo(Event, {
+  foreignKey: "eventId"
+});
+
+VendorProfile.hasMany(Payment, {
+  foreignKey: "vendorId",
+  as: "payments"
+});
+
+Payment.belongsTo(VendorProfile, {
+  foreignKey: "vendorId"
+});
+
+CustomerProfile.hasMany(Payment, {
+  foreignKey: "customerId"
+});
+
+Payment.belongsTo(CustomerProfile, {
+  foreignKey: "customerId"
+});
+
+Event.hasMany(Payment, {
+  foreignKey: "eventId"
+});
+
+Payment.belongsTo(Event, {
+  foreignKey: "eventId"
 });

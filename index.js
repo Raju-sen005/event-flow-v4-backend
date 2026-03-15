@@ -19,6 +19,7 @@ import vendorKYCRoutes from "./routes/vendors/kyc.routes.js";
 import adminKYCRoutes from "./routes/admin/kyc.admin.routes.js";
 import questionRoutes from "./routes/questionRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import paymentRoutes from "./routes/payment.routes.js";
 
 dotenv.config();
 
@@ -48,6 +49,7 @@ app.use("/api/vendor/kyc", vendorKYCRoutes);
 app.use("/api/admin/kyc", adminKYCRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/payments", paymentRoutes);
 // ✅ DB CONNECT & SYNC
 sequelize
   .sync()
