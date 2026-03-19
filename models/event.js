@@ -14,6 +14,10 @@ const Event = sequelize.define(
       allowNull: false,
     },
 
+    vendorId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
