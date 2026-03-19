@@ -9,17 +9,20 @@ import {
   updateVendorProfile,
   deleteVendorProfile,
 } from "../../controllers/vendors/profile.controller.js";
+import upload from "../../middleware/profileUpload.js";
 
 const router = express.Router();
 
 router.use(
   protect,
-  authorizeRoles("vendor", "event-planner", "freelance-planner")
+  authorizeRoles("vendor", "event-planner", "freelance-planner"),
 );
 
-router.post("/", createVendorProfile);
+router.post("/", upload.single("profileImage"), createVendorProfile);
+// router.post("/", createVendorProfile);
 router.get("/", getMyVendorProfile);
-router.put("/", updateVendorProfile);
+router.put("/", upload.single("profileImage"), updateVendorProfile);
+// router.put("/", updateVendorProfile);
 router.delete("/", deleteVendorProfile);
 
 export default router;

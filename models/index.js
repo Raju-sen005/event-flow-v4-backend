@@ -5,33 +5,38 @@ import Event from "./event.js";
 import EventService from "./eventService.js";
 import Guest from "./guest.js";
 import Bid from "./bid.js";
-// import VendorProfile from "./VendorProfile.js";
 import Package from "./Package.js";
 import Portfolio from "./Portfolio.js";
 import Vendor from "./Vendor.js";
 import VendorKYC from "./VendorKYC.js";
+import Negotiation from "./Negotiation.js";
+import NegotiationOffer from "./NegotiationOffer.js";
+import Payment from "./payment.model.js";
+import Ticket from "./Ticket.js";
+import TicketMessage from "./TicketMessage.js";
+import VendorAvailability from "./VendorAvailability.js";
+import VendorSettings from "./VendorSettings.js";
 
-// import User from "./User.js";
 /* =======================
-   ASSOCIATIONS
+   USER ↔ PROFILES
 ======================= */
 
 User.hasOne(CustomerProfile, {
   foreignKey: "userId",
-  onDelete: "CASCADE",
+  onDelete: "CASCADE"
 });
 
 CustomerProfile.belongsTo(User, {
-  foreignKey: "userId",
+  foreignKey: "userId"
 });
 
 User.hasOne(VendorProfile, {
   foreignKey: "userId",
-  onDelete: "CASCADE",
+  onDelete: "CASCADE"
 });
 
 VendorProfile.belongsTo(User, {
-  foreignKey: "userId",
+  foreignKey: "userId"
 });
 
 /* =======================
@@ -40,11 +45,11 @@ VendorProfile.belongsTo(User, {
 
 CustomerProfile.hasMany(Event, {
   foreignKey: "customer_id",
-  onDelete: "CASCADE",
+  onDelete: "CASCADE"
 });
 
 Event.belongsTo(CustomerProfile, {
-  foreignKey: "customer_id",
+  foreignKey: "customer_id"
 });
 
 /* =======================
@@ -54,57 +59,51 @@ Event.belongsTo(CustomerProfile, {
 Event.hasMany(EventService, {
   foreignKey: "event_id",
   as: "services",
-  onDelete: "CASCADE",
+  onDelete: "CASCADE"
 });
 
 EventService.belongsTo(Event, {
-  foreignKey: "event_id",
+  foreignKey: "event_id"
 });
 
 /* =======================
-   🔥 NAMED EXPORTS (THIS FIXES ERROR)
+   EVENT → GUESTS
 ======================= */
-
-export {
-  User,
-  CustomerProfile,
-  VendorProfile,
-  Event,
-  Package,
-  Portfolio,
-  EventService
-};
-
-
 
 Event.hasMany(Guest, {
   foreignKey: "event_id",
   as: "guests",
-  onDelete: "CASCADE",
+  onDelete: "CASCADE"
 });
 
 Guest.belongsTo(Event, {
-  foreignKey: "event_id",
+  foreignKey: "event_id"
 });
 
-
+/* =======================
+   BIDS
+======================= */
 
 User.hasMany(Bid, { foreignKey: "vendor_id" });
-Bid.belongsTo(User, { foreignKey: "vendor_id", as: "vendor" });
+
+Bid.belongsTo(User, {
+  foreignKey: "vendor_id",
+  as: "vendor"
+});
 
 Event.hasMany(Bid, {
   foreignKey: "event_id",
-  onDelete: "CASCADE",
+  onDelete: "CASCADE"
 });
 
 Bid.belongsTo(Event, {
-  foreignKey: "event_id",
+  foreignKey: "event_id"
 });
 
+/* =======================
+   PACKAGES
+======================= */
 
-/**
- * VendorProfile ↔ Packages
- */
 VendorProfile.hasMany(Package, {
   foreignKey: "vendor_id",
   as: "packages"
@@ -115,9 +114,10 @@ Package.belongsTo(VendorProfile, {
   as: "vendor"
 });
 
-/**
- * VendorProfile ↔ Portfolio (via userId)
- */
+/* =======================
+   PORTFOLIO
+======================= */
+
 VendorProfile.hasMany(Portfolio, {
   foreignKey: "userId",
   sourceKey: "userId",
@@ -130,9 +130,122 @@ Portfolio.belongsTo(VendorProfile, {
   as: "vendorProfile"
 });
 
+/* =======================
+   VENDOR
+======================= */
 
-Vendor.hasOne(VendorKYC, { foreignKey: "vendorId" });
-VendorKYC.belongsTo(Vendor, { foreignKey: "vendorId" });
+User.hasOne(Vendor, {
+  foreignKey: "userId"
+});
 
-User.hasOne(Vendor, { foreignKey: "userId" });
-Vendor.belongsTo(User, { foreignKey: "userId" });
+Vendor.belongsTo(User, {
+  foreignKey: "userId"
+});
+
+Vendor.hasOne(VendorKYC, {
+  foreignKey: "vendorId"
+});
+
+VendorKYC.belongsTo(Vendor, {
+  foreignKey: "vendorId"
+});
+
+/* =======================
+   NEGOTIATION
+======================= */
+
+Bid.hasOne(Negotiation, {
+  foreignKey: "bid_id"
+});
+
+Negotiation.belongsTo(Bid, {
+  foreignKey: "bid_id"
+});
+
+Negotiation.hasMany(NegotiationOffer, {
+  foreignKey: "negotiation_id",
+  as: "offers"
+});
+
+NegotiationOffer.belongsTo(Negotiation, {
+  foreignKey: "negotiation_id"
+});
+
+/* =======================
+   PAYMENTS
+======================= */
+
+Event.hasMany(Payment, {
+  foreignKey: "eventId",
+  as: "payments"
+});
+
+Payment.belongsTo(Event, {
+  foreignKey: "eventId"
+});
+
+Vendor.hasMany(Payment, {
+  foreignKey: "vendorId",
+  as: "payments"
+});
+
+Payment.belongsTo(Vendor, {
+  foreignKey: "vendorId"
+});
+
+CustomerProfile.hasMany(Payment, {
+  foreignKey: "customerId",
+  as: "payments"
+});
+
+Payment.belongsTo(CustomerProfile, {
+  foreignKey: "customerId"
+});
+
+/* =======================
+   SUPPORT TICKETS
+======================= */
+
+Vendor.hasMany(Ticket,{
+  foreignKey:"vendorId",
+  as:"tickets"
+});
+
+Ticket.belongsTo(Vendor,{
+  foreignKey:"vendorId"
+});
+
+Ticket.hasMany(TicketMessage,{
+  foreignKey:"ticketId",
+  as:"messages",
+  onDelete:"CASCADE"
+});
+
+TicketMessage.belongsTo(Ticket,{
+  foreignKey:"ticketId"
+});
+
+/* =======================
+   EXPORTS
+======================= */
+
+export {
+  User,
+  CustomerProfile,
+  VendorProfile,
+  Event,
+  EventService,
+  Guest,
+  Bid,
+  Package,
+  Portfolio,
+  Vendor,
+  VendorKYC,
+  Negotiation,
+  NegotiationOffer,
+  Payment,
+  Ticket,
+  TicketMessage,
+  VendorAvailability,
+ VendorSettings
+};

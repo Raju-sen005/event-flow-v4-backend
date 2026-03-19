@@ -3,7 +3,8 @@ import PortfolioMedia from "../../models/PortfolioMedia.js";
 
 export const createPortfolio = async (req, res) => {
   try {
-    const { title, category, subCategory, description, status, media } = req.body;
+
+    const { title, category, subCategory, description, status } = req.body;
 
     const portfolio = await Portfolio.create({
       userId: req.user.id,
@@ -14,16 +15,18 @@ export const createPortfolio = async (req, res) => {
       status,
     });
 
-    if (media && media.length) {
-      const mediaData = media.map(m => ({
-        portfolioId: portfolio.id,
-        type: m.type,
-        url: m.url,
-      }));
-      await PortfolioMedia.bulkCreate(mediaData);
+    const media = req.files.map(file => ({
+      portfolioId: portfolio.id,
+      type: file.mimetype.startsWith("video") ? "video" : "image",
+      url: `/uploads/portfolio/${file.filename}`
+    }));
+
+    if (media.length) {
+      await PortfolioMedia.bulkCreate(media);
     }
 
     res.status(201).json({ message: "Portfolio created", portfolio });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
