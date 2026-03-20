@@ -12,10 +12,13 @@ export const createVendorProfile = async (req, res) => {
       return res.status(409).json({ message: "Profile already exists" });
     }
 
-    const profile = await VendorProfile.create({
-      userId: req.user.id,
-      ...req.body,
-    });
+    const image = req.file ? `/${req.file.path}` : null;
+
+const profile = await VendorProfile.create({
+  userId: req.user.id,
+  ...req.body,
+  profileImage: image,
+});
 
     res.status(201).json({
       message: "Vendor profile created",
@@ -56,7 +59,12 @@ export const updateVendorProfile = async (req, res) => {
       return res.status(404).json({ message: "Profile not found" });
     }
 
-    await profile.update(req.body);
+    const image = req.file ? `/${req.file.path}` : null;
+
+await profile.update({
+  ...req.body,
+  profileImage: image || profile.profileImage,
+});
 
     res.json({
       message: "Profile updated successfully",

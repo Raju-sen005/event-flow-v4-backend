@@ -8,12 +8,13 @@ import {
 } from "../../controllers/vendors/portfolio.controller.js";
 import { protect } from "../../middleware/auth.middleware.js";
 import { authorizeVendor } from "../../middleware/authorizeRoles.js";
+import uploadPortfolio from "../../middleware/uploadPortfolio.middleware.js";
 
 const router = express.Router();
 
 router.use(protect, authorizeVendor);
 
-router.post("/", createPortfolio);
+router.post("/",uploadPortfolio.array("media", 10), createPortfolio);
 router.get("/", getMyPortfolios);
 router.put("/:id", updatePortfolio);
 router.patch("/:id/status", togglePortfolioStatus);

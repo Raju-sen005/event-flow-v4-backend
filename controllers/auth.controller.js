@@ -1,38 +1,38 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-
+import Vendor from "../models/Vendor.js"; // add this
+import VendorProfile from "../models/VendorProfile.js";
 const generateToken = (user) => {
-  return jwt.sign(
-    { id: user.id, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN }
-  );
+  return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
 };
 
 // 🔐 REGISTER
 export const register = async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      password,
-      confirmPassword,
-      role,
-      businessName
-    } = req.body;
+    const { name, email, password, confirmPassword, role, businessName } =
+      req.body;
 
     // ✅ Required fields check
-    if (!name || !email || !password || !confirmPassword || !role || !businessName) {
+    if (
+      !name ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !role ||
+      !businessName
+    ) {
       return res.status(400).json({
-        message: "All fields are required"
+        message: "All fields are required",
       });
     }
 
     // ✅ Confirm password check
     if (password !== confirmPassword) {
       return res.status(400).json({
-        message: "Password and confirm password do not match"
+        message: "Password and confirm password do not match",
       });
     }
 
@@ -45,7 +45,8 @@ export const register = async (req, res) => {
 
     if (!strongPassword) {
       return res.status(400).json({
-        message: "Password must be at least 8 characters with uppercase, lowercase and number"
+        message:
+          "Password must be at least 8 characters with uppercase, lowercase and number",
       });
     }
 
@@ -53,7 +54,7 @@ export const register = async (req, res) => {
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(409).json({
-        message: "Email already registered"
+        message: "Email already registered",
       });
     }
 
@@ -65,8 +66,17 @@ export const register = async (req, res) => {
       email,
       password: hashedPassword,
       role,
-      businessName
+      businessName,
     });
+
+    // 🔥 ADD THIS BLOCK
+    if (role === "vendor") {
+      await Vendor.create({
+        userId: user.id,
+        name: businessName, // or name
+        category: "general", // default category (change as needed)
+      });
+    }
 
     const token = generateToken(user);
 
@@ -77,18 +87,16 @@ export const register = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
-
   } catch (error) {
     return res.status(500).json({
       message: "Registration failed",
-      error: error.message
+      error: error.message,
     });
   }
 };
-
 
 // 🔑 LOGIN
 export const login = async (req, res) => {
@@ -107,6 +115,16 @@ export const login = async (req, res) => {
 
     const token = generateToken(user);
 
+    let profileImage = null;
+
+    if (user.role === "vendor") {
+      const profile = await VendorProfile.findOne({
+        where: { userId: user.id },
+      });
+
+      profileImage = profile?.profileImage || null;
+    }
+
     res.json({
       message: "Login successful",
       token,
@@ -115,9 +133,9 @@ export const login = async (req, res) => {
         name: user.name,
         role: user.role,
         email: user.email,
+        profileImage, // 🔥 ADD THIS
       },
     });
-
   } catch (err) {
     res.status(500).json({ message: "Login failed" });
   }

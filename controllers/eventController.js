@@ -1,5 +1,6 @@
 import sequelize from "../config/db.js";
 import { Event, EventService, CustomerProfile } from "../models/index.js";
+import { VendorProfile } from "../models/index.js";
 
 /* =======================
    CREATE EVENT
@@ -15,6 +16,7 @@ export const createEvent = async (req, res) => {
       endTime,
       location,
       budget,
+      guest,
       notes,
       category_id,
       management_mode,
@@ -59,6 +61,7 @@ export const createEvent = async (req, res) => {
         end_time: endTime,
         location,
         budget,
+        guest,
         notes,
         category_id,
         management_mode,
@@ -88,6 +91,7 @@ export const createEvent = async (req, res) => {
     await transaction.commit();
 
     return res.status(201).json({
+      data: event,
       success: true,
       event_id: event.id
     });
@@ -198,5 +202,85 @@ export const getEventById = async (req, res) => {
       success: false,
       message: "Server error"
     });
+  }
+};
+
+
+// Vendor के लिए - GET EVENTS IN THEIR CATEGORY
+
+export const getVendorEvents = async (req, res) => {
+  try {
+
+    const events = await Event.findAll({
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: EventService,
+          as: "services",
+          attributes: ["id", "service_name"]
+        }
+      ]
+    });
+
+    res.json({
+      success: true,
+      count: events.length,
+      data: events
+    });
+
+  } catch (error) {
+    console.error("Vendor Events Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+/* =======================
+   GET EVENT DETAIL FOR VENDOR
+======================= */
+
+export const getVendorEventById = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const event = await Event.findByPk(id, {
+      include: [
+        {
+          model: EventService,
+          as: "services",
+          attributes: ["id", "service_name"]
+        },
+        {
+          model: CustomerProfile,
+          attributes: ["id", "firstName", "lastName", "phone"]
+        }
+      ]
+    });
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found"
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: event
+    });
+
+  } catch (error) {
+
+    console.error("Vendor Event Detail Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+
   }
 };

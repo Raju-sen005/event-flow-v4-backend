@@ -21,7 +21,10 @@ const VendorProfile = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-
+profileImage: {
+  type: DataTypes.STRING,
+  allowNull: true,
+},
     ownerName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -65,7 +68,7 @@ const VendorProfile = sequelize.define(
   {
     tableName: "vendor_profiles",
     timestamps: true,
-  }
+  },
 );
 
 export default VendorProfile;
