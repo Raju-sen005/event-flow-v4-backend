@@ -16,27 +16,27 @@ import Ticket from "./Ticket.js";
 import TicketMessage from "./TicketMessage.js";
 import VendorAvailability from "./VendorAvailability.js";
 import VendorSettings from "./VendorSettings.js";
-
+import PortfolioMedia from "./PortfolioMedia.js";
 /* =======================
    USER ↔ PROFILES
 ======================= */
 
 User.hasOne(CustomerProfile, {
   foreignKey: "userId",
-  onDelete: "CASCADE"
+  onDelete: "CASCADE",
 });
 
 CustomerProfile.belongsTo(User, {
-  foreignKey: "userId"
+  foreignKey: "userId",
 });
 
 User.hasOne(VendorProfile, {
   foreignKey: "userId",
-  onDelete: "CASCADE"
+  onDelete: "CASCADE",
 });
 
 VendorProfile.belongsTo(User, {
-  foreignKey: "userId"
+  foreignKey: "userId",
 });
 
 /* =======================
@@ -45,11 +45,11 @@ VendorProfile.belongsTo(User, {
 
 CustomerProfile.hasMany(Event, {
   foreignKey: "customer_id",
-  onDelete: "CASCADE"
+  onDelete: "CASCADE",
 });
 
 Event.belongsTo(CustomerProfile, {
-  foreignKey: "customer_id"
+  foreignKey: "customer_id",
 });
 
 /* =======================
@@ -59,11 +59,11 @@ Event.belongsTo(CustomerProfile, {
 Event.hasMany(EventService, {
   foreignKey: "event_id",
   as: "services",
-  onDelete: "CASCADE"
+  onDelete: "CASCADE",
 });
 
 EventService.belongsTo(Event, {
-  foreignKey: "event_id"
+  foreignKey: "event_id",
 });
 
 /* =======================
@@ -73,11 +73,11 @@ EventService.belongsTo(Event, {
 Event.hasMany(Guest, {
   foreignKey: "event_id",
   as: "guests",
-  onDelete: "CASCADE"
+  onDelete: "CASCADE",
 });
 
 Guest.belongsTo(Event, {
-  foreignKey: "event_id"
+  foreignKey: "event_id",
 });
 
 /* =======================
@@ -88,16 +88,17 @@ User.hasMany(Bid, { foreignKey: "vendor_id" });
 
 Bid.belongsTo(User, {
   foreignKey: "vendor_id",
-  as: "vendor"
+  as: "vendor",
 });
 
 Event.hasMany(Bid, {
   foreignKey: "event_id",
-  onDelete: "CASCADE"
+  as: "bids",
+  onDelete: "CASCADE",
 });
 
 Bid.belongsTo(Event, {
-  foreignKey: "event_id"
+  foreignKey: "event_id",
 });
 
 /* =======================
@@ -106,12 +107,12 @@ Bid.belongsTo(Event, {
 
 VendorProfile.hasMany(Package, {
   foreignKey: "vendor_id",
-  as: "packages"
+  as: "packages",
 });
 
 Package.belongsTo(VendorProfile, {
   foreignKey: "vendor_id",
-  as: "vendor"
+  as: "vendor",
 });
 
 /* =======================
@@ -121,33 +122,47 @@ Package.belongsTo(VendorProfile, {
 VendorProfile.hasMany(Portfolio, {
   foreignKey: "userId",
   sourceKey: "userId",
-  as: "portfolios"
+  as: "portfolios",
 });
 
 Portfolio.belongsTo(VendorProfile, {
   foreignKey: "userId",
   targetKey: "userId",
-  as: "vendorProfile"
+  as: "vendorProfile",
 });
 
+/* =======================
+   PORTFOLIO MEDIA
+======================= */
+
+Portfolio.hasMany(PortfolioMedia, {
+  foreignKey: "portfolioId",
+  as: "media",
+  onDelete: "CASCADE",
+});
+
+PortfolioMedia.belongsTo(Portfolio, {
+  foreignKey: "portfolioId",
+  as: "portfolio",
+});
 /* =======================
    VENDOR
 ======================= */
 
 User.hasOne(Vendor, {
-  foreignKey: "userId"
+  foreignKey: "userId",
 });
 
 Vendor.belongsTo(User, {
-  foreignKey: "userId"
+  foreignKey: "userId",
 });
 
 Vendor.hasOne(VendorKYC, {
-  foreignKey: "vendorId"
+  foreignKey: "vendorId",
 });
 
 VendorKYC.belongsTo(Vendor, {
-  foreignKey: "vendorId"
+  foreignKey: "vendorId",
 });
 
 /* =======================
@@ -155,20 +170,20 @@ VendorKYC.belongsTo(Vendor, {
 ======================= */
 
 Bid.hasOne(Negotiation, {
-  foreignKey: "bid_id"
+  foreignKey: "bid_id",
 });
 
 Negotiation.belongsTo(Bid, {
-  foreignKey: "bid_id"
+  foreignKey: "bid_id",
 });
 
 Negotiation.hasMany(NegotiationOffer, {
   foreignKey: "negotiation_id",
-  as: "offers"
+  as: "offers",
 });
 
 NegotiationOffer.belongsTo(Negotiation, {
-  foreignKey: "negotiation_id"
+  foreignKey: "negotiation_id",
 });
 
 /* =======================
@@ -177,52 +192,52 @@ NegotiationOffer.belongsTo(Negotiation, {
 
 Event.hasMany(Payment, {
   foreignKey: "eventId",
-  as: "payments"
+  as: "payments",
 });
 
 Payment.belongsTo(Event, {
-  foreignKey: "eventId"
+  foreignKey: "eventId",
 });
 
 Vendor.hasMany(Payment, {
   foreignKey: "vendorId",
-  as: "payments"
+  as: "payments",
 });
 
 Payment.belongsTo(Vendor, {
-  foreignKey: "vendorId"
+  foreignKey: "vendorId",
 });
 
 CustomerProfile.hasMany(Payment, {
   foreignKey: "customerId",
-  as: "payments"
+  as: "payments",
 });
 
 Payment.belongsTo(CustomerProfile, {
-  foreignKey: "customerId"
+  foreignKey: "customerId",
 });
 
 /* =======================
    SUPPORT TICKETS
 ======================= */
 
-Vendor.hasMany(Ticket,{
-  foreignKey:"vendorId",
-  as:"tickets"
+Vendor.hasMany(Ticket, {
+  foreignKey: "vendorId",
+  as: "tickets",
 });
 
-Ticket.belongsTo(Vendor,{
-  foreignKey:"vendorId"
+Ticket.belongsTo(Vendor, {
+  foreignKey: "vendorId",
 });
 
-Ticket.hasMany(TicketMessage,{
-  foreignKey:"ticketId",
-  as:"messages",
-  onDelete:"CASCADE"
+Ticket.hasMany(TicketMessage, {
+  foreignKey: "ticketId",
+  as: "messages",
+  onDelete: "CASCADE",
 });
 
-TicketMessage.belongsTo(Ticket,{
-  foreignKey:"ticketId"
+TicketMessage.belongsTo(Ticket, {
+  foreignKey: "ticketId",
 });
 
 /* =======================
@@ -247,5 +262,6 @@ export {
   Ticket,
   TicketMessage,
   VendorAvailability,
- VendorSettings
+  VendorSettings,
+  PortfolioMedia,
 };

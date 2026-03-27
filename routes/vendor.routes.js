@@ -4,5 +4,5 @@ import vendorController from "../controllers/vendor.controller.js";
 const router = express.Router();
 
 router.get("/", vendorController.getAllVendors);
-
+router.get("/:id", vendorController.getVendorById);
 export default router;
