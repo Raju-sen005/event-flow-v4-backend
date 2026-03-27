@@ -16,6 +16,9 @@ import Ticket from "./Ticket.js";
 import TicketMessage from "./TicketMessage.js";
 import VendorAvailability from "./VendorAvailability.js";
 import VendorSettings from "./VendorSettings.js";
+import PoolEvent from "./PoolEvents.js";
+import PoolEventTicket from "./PoolEventTicket.js";
+import PoolBookedTicket from "./PoolBookedTicket.js";
 
 /* =======================
    USER ↔ PROFILES
@@ -225,6 +228,23 @@ TicketMessage.belongsTo(Ticket,{
   foreignKey:"ticketId"
 });
 
+PoolEvent.hasMany(PoolEventTicket, {
+  foreignKey: "event_id",
+});
+
+PoolEventTicket.belongsTo(PoolEvent, {
+  foreignKey: "event_id",
+});
+
+PoolBookedTicket.belongsTo(PoolEvent, {
+  foreignKey: "event_id",
+  as: "event",
+});
+
+PoolEvent.hasMany(PoolBookedTicket, {
+  foreignKey: "event_id",
+  as: "tickets",
+});
 /* =======================
    EXPORTS
 ======================= */
@@ -247,5 +267,7 @@ export {
   Ticket,
   TicketMessage,
   VendorAvailability,
- VendorSettings
+  VendorSettings,
+  PoolEvent,
+  PoolEventTicket
 };
