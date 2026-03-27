@@ -2,7 +2,10 @@ import Bid from "../models/bid.js";
 import Event from "../models/event.js";
 import CustomerProfile from "../models/customerProfile.js";
 import User from "../models/User.js";
-
+// import VendorProfile from "../models/vendorProfile.js";
+import VendorPackage from "../models/Package.js";
+import VendorProfile from "../models/VendorProfile.js";
+import Portfolio from "../models/Portfolio.js";
 /* =============================
    PLACE BID
 ============================= */
@@ -49,9 +52,7 @@ export const placeBid = async (req, res) => {
 
     const files = req.files;
 
-    const portfolioSamples = files
-      ? files.map((file) => file.filename)
-      : [];
+    const portfolioSamples = files ? files.map((file) => file.filename) : [];
 
     const bid = await Bid.create({
       event_id,
@@ -143,36 +144,90 @@ export const getMyBids = async (req, res) => {
    GET BID BY ID
 ============================= */
 
+// export const getBidById = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const vendorId = req.user.id;
+
+//     const bid = await Bid.findOne({
+//       where: {
+//         id,
+//         vendor_id: vendorId,
+//       },
+//       include: [
+//         {
+//           model: Event,
+//           attributes: [
+//             "id",
+//             "name",
+//             "date",
+//             "location",
+//             "budget",
+//             "guest",
+//             "notes",
+//           ],
+//           include: [
+//             {
+//               model: CustomerProfile,
+//               attributes: ["firstName", "lastName", "phone"],
+//               include: [
+//                 {
+//                   model: User,
+//                   attributes: ["email"],
+//                 },
+//               ],
+//             },
+//           ],
+//         },
+//       ],
+//     });
+
+//     if (!bid) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Bid not found",
+//       });
+//     }
+
+//     res.json({
+//       success: true,
+//       data: bid,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//     });
+//   }
+// };
+
 export const getBidById = async (req, res) => {
   try {
     const { id } = req.params;
-    const vendorId = req.user.id;
 
     const bid = await Bid.findOne({
-      where: {
-        id,
-        vendor_id: vendorId,
-      },
+      where: { id },
       include: [
         {
           model: Event,
-          attributes: [
-            "id",
-            "name",
-            "date",
-            "location",
-            "budget",
-            "guest",
-            "notes",
-          ],
+        },
+        {
+          model: User,
+          as: "vendor",
+          attributes: ["id", "name", "email"],
           include: [
             {
-              model: CustomerProfile,
-              attributes: ["firstName", "lastName", "phone"],
+              model: VendorProfile,
+              attributes: [
+                "profileImage",
+                "category",
+                "experience",
+                "location",
+              ],
               include: [
                 {
-                  model: User,
-                  attributes: ["email"],
+                  model: Portfolio,
+                  as: "portfolios",
+                  attributes: ["id", "title"],
                 },
               ],
             },
@@ -188,11 +243,19 @@ export const getBidById = async (req, res) => {
       });
     }
 
+    const inclusions = bid.addons
+      ? bid.addons.split(",").map((i) => i.trim())
+      : [];
+
     res.json({
       success: true,
-      data: bid,
+      data: {
+        ...bid.toJSON(),
+        inclusions,
+      },
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       success: false,
     });

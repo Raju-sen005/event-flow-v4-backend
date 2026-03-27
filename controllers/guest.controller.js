@@ -9,6 +9,7 @@ export const addGuest = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    console.log("eventId:", event_id);
     const guest = await Guest.create({
       event_id,
       name,
@@ -16,7 +17,6 @@ export const addGuest = async (req, res) => {
       phone,
       category,
     });
-
     res.status(201).json({
       success: true,
       message: "Guest added successfully",
