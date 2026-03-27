@@ -23,6 +23,7 @@ import paymentRoutes from "./routes/payment.routes.js";
 import supportRoutes from "./routes/support.routes.js";
 import vendorAvailability from "./routes/vendorAvailabilityRoutes.js"
 import vendorSettingsRoutes from "./routes/vendorSettingsRoutes.js";
+import poolRoutes from "./routes/pool/poolRoute.js"
 
 dotenv.config();
 
@@ -56,6 +57,8 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/support",supportRoutes);
 app.use("/api/vendor/availability", vendorAvailability)
 app.use("/api/vendor/settings", vendorSettingsRoutes);
+
+app.use("/api/pool", poolRoutes);
 
 // ✅ DB CONNECT & SYNC
 sequelize
