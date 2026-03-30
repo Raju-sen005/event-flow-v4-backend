@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import sequelize from "./config/db.js"; // 🔥 YAHI SAHI IMPORT HAI
+import https from "https";
+import fs from "fs";
 
 import "./models/index.js";
 // IMPORT
