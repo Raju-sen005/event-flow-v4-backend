@@ -9,6 +9,7 @@ const Event = sequelize.define(
       autoIncrement: true,
       primaryKey: true,
     },
+
     customer_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -18,6 +19,7 @@ const Event = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -47,6 +49,7 @@ const Event = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+
     guest: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -65,6 +68,23 @@ const Event = sequelize.define(
     category_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+
+    // 🔥 NEW FIELD: event status
+    status: {
+      type: DataTypes.ENUM(
+        "planning",
+        "in-progress",
+        "vendors-finalized",
+        "completed",
+      ),
+      defaultValue: "planning",
+    },
+
+    // 🔥 OPTIONAL: progress (store or compute)
+    progress: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
   },
   {

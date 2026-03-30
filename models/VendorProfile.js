@@ -21,10 +21,10 @@ const VendorProfile = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-profileImage: {
-  type: DataTypes.STRING,
-  allowNull: true,
-},
+    profileImage: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     ownerName: {
       type: DataTypes.STRING,
       allowNull: false,
