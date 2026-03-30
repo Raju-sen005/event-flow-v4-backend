@@ -60,12 +60,6 @@ app.use("/api/vendor/settings", vendorSettingsRoutes);
 
 app.use("/api/pool", poolRoutes);
 
-const server = https.createServer({
-  key: fs.readFileSync("/home/gogatherhub/public_html/ssl/privkey.pem"),
-  cert: fs.readFileSync("/home/gogatherhub/public_html/ssl/cert.pem"),
-  ca: fs.readFileSync("/home/gogatherhub/public_html/ssl/bundle.pem")
-}, app);
-
 // ✅ DB CONNECT & SYNC
 sequelize
   .sync()
@@ -76,6 +70,6 @@ sequelize
     console.error("DB connection error:", err);
   });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
+server.listen(process.env.PORT || 5000, "0.0.0.0", () => {
+  console.log(`HTTPS Server running on port ${process.env.PORT}`);
 });
