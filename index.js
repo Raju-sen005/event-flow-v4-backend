@@ -60,6 +60,12 @@ app.use("/api/vendor/settings", vendorSettingsRoutes);
 
 app.use("/api/pool", poolRoutes);
 
+const server = https.createServer({
+  key: fs.readFileSync("/home/gogatherhub/public_html/ssl/privkey.pem"),
+  cert: fs.readFileSync("/home/gogatherhub/public_html/ssl/cert.pem"),
+  ca: fs.readFileSync("/home/gogatherhub/public_html/ssl/bundle.pem")
+}, app);
+
 // ✅ DB CONNECT & SYNC
 sequelize
   .sync()
