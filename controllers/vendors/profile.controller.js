@@ -1,7 +1,9 @@
 // controllers/vendor/profile.controller.js
 import VendorProfile from "../../models/VendorProfile.js";
+import User from "../../models/User.js";
 
 // 🟢 CREATE PROFILE
+
 export const createVendorProfile = async (req, res) => {
   try {
     const exists = await VendorProfile.findOne({
@@ -12,20 +14,44 @@ export const createVendorProfile = async (req, res) => {
       return res.status(409).json({ message: "Profile already exists" });
     }
 
+    const user = await User.findByPk(req.user.id);
+
     const image = req.file ? `/${req.file.path}` : null;
 
-const profile = await VendorProfile.create({
-  userId: req.user.id,
-  ...req.body,
-  profileImage: image,
-});
+    const {
+      businessName,
+      ownerName,
+      experience,
+      location,
+      serviceLocations,
+      phone,
+      email,
+      description,
+      serviceCategory,
+    } = req.body;
+
+    const profile = await VendorProfile.create({
+      userId: req.user.id,
+      businessName,
+      ownerName,
+      experience,
+      location,
+      serviceLocations,
+      phone,
+      email,
+      description,
+      profileImage: image,
+
+      // 🔥 FIX: category always from user
+      category: user.category,
+      serviceCategory,
+    });
 
     res.status(201).json({
       message: "Vendor profile created",
       profile,
     });
   } catch (err) {
-    console.error("CREATE VENDOR PROFILE ERROR:", err);
     res.status(500).json({ message: "Profile creation failed" });
   }
 };
@@ -59,19 +85,42 @@ export const updateVendorProfile = async (req, res) => {
       return res.status(404).json({ message: "Profile not found" });
     }
 
+    const user = await User.findByPk(req.user.id);
+
     const image = req.file ? `/${req.file.path}` : null;
 
-await profile.update({
-  ...req.body,
-  profileImage: image || profile.profileImage,
-});
+    const {
+      businessName,
+      ownerName,
+      experience,
+      location,
+      serviceLocations,
+      phone,
+      email,
+      description,
+    } = req.body;
+
+    await profile.update({
+      businessName,
+      ownerName,
+      experience,
+      location,
+      serviceLocations,
+      phone,
+      email,
+      description,
+      profileImage: image || profile.profileImage,
+
+      // 🔥 ALWAYS FORCE
+      category: user.category,
+      serviceCategory: req.body.serviceCategory,
+    });
 
     res.json({
       message: "Profile updated successfully",
       profile,
     });
   } catch (err) {
-    console.error("UPDATE VENDOR PROFILE ERROR:", err);
     res.status(500).json({ message: "Update failed" });
   }
 };
