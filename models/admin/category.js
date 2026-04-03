@@ -19,6 +19,22 @@ const Category = sequelize.define(
             type: DataTypes.TEXT,
             allowNull: true,
         },
+        meta_title: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        meta_desc: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        meta_keywords: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        meta_author: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
         status: {
             type: DataTypes.ENUM("active", "inactive"),
             allowNull: false,
