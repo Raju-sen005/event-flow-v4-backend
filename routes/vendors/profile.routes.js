@@ -15,9 +15,13 @@ const router = express.Router();
 
 router.use(
   protect,
+//   router.use((req, res, next) => {
+//   // console.log("USER:", req.user);
+//   next();
+// }),
   authorizeRoles("vendor", "event-planner", "freelance-planner"),
 );
-
+// console.log("HIT PROFILE ROUTE");
 router.post("/", upload.single("profileImage"), createVendorProfile);
 // router.post("/", createVendorProfile);
 router.get("/", getMyVendorProfile);

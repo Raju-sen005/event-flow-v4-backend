@@ -35,6 +35,10 @@ const VendorProfile = sequelize.define(
       allowNull: false,
     },
 
+    serviceCategory: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     experience: {
       type: DataTypes.STRING,
       allowNull: false,

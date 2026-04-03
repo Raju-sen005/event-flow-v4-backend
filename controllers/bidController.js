@@ -15,7 +15,7 @@ export const placeBid = async (req, res) => {
     const {
       event_id,
       price,
-      packageName,
+      package_name,
       description,
       timeline,
       addons,
@@ -24,7 +24,7 @@ export const placeBid = async (req, res) => {
 
     const vendorId = req.user.id;
 
-    if (!event_id || !price || !packageName || !description || !timeline) {
+    if (!event_id || !price || !package_name || !description || !timeline) {
       return res.status(400).json({
         success: false,
         message: "Required fields missing",
@@ -58,7 +58,7 @@ export const placeBid = async (req, res) => {
       event_id,
       vendor_id: vendorId,
       price,
-      package_name: packageName,
+      package_name,
       description,
       timeline,
       addons,
@@ -209,6 +209,18 @@ export const getBidById = async (req, res) => {
       include: [
         {
           model: Event,
+          include: [
+            {
+              model: CustomerProfile,
+              attributes: ["firstName", "phone"],
+              include: [
+                {
+                  model: User,
+                  attributes: ["email"],
+                },
+              ],
+            },
+          ],
         },
         {
           model: User,
@@ -332,7 +344,12 @@ export const updateBid = async (req, res) => {
     }
 
     await bid.update({
-      ...req.body,
+      price: Number(req.body.price),
+      package_name: req.body.package_name,
+      description: req.body.description,
+      timeline: req.body.timeline,
+      addons: req.body.addons,
+      notes: req.body.notes,
       portfolio_samples: portfolioSamples,
     });
 
