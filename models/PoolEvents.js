@@ -50,7 +50,8 @@ const PoolEvent = sequelize.define("PoolEvent", {
   verified: DataTypes.BOOLEAN
 
 }, {
-  timestamps: true, // createdAt, updatedAt auto
-});
+    tableName: "poolevents",
+    timestamps: true,
+  },);
 
 export default PoolEvent;
