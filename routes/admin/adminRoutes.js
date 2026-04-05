@@ -6,6 +6,7 @@ import {
   createSubCategory,
   subCategoryList,
   subCategoryByCategory,
+  subCategoryByMultipleCategories,
 } from "../../controllers/admin/categoryController.js";
 
 const router = express.Router();
@@ -15,7 +16,7 @@ router.post("/login", login);
 
 router.post("/create-category", createCategory);
 router.get("/category-list", categoryList);
-
+router.post("/subcategories/by-categories", subCategoryByMultipleCategories);
 router.post("/subcategories", createSubCategory);
 router.get("/subcategories", subCategoryList);
 router.get("/subcategories/category/:category_id", subCategoryByCategory);
