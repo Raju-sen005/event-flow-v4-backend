@@ -4,81 +4,86 @@ import User from "../models/User.js";
 import Vendor from "../models/Vendor.js"; // add this
 import VendorProfile from "../models/VendorProfile.js";
 const generateToken = (user) => {
-  return jwt.sign(
-    { id: user.id, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
-  );
+  return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+  });
 };
 
 // 🔐 REGISTER
 export const register = async (req, res) => {
   try {
-    const { name, email, password, confirmPassword, role, businessName } =
-      req.body;
+    const {
+      name,
+      email,
+      password,
+      confirmPassword,
+      role,
+      businessName,
+      phone,
+      category,
+    } = req.body;
 
-    // ✅ Required fields check
+    // ✅ Validation
     if (
       !name ||
       !email ||
       !password ||
       !confirmPassword ||
       !role ||
-      !businessName
+      !businessName ||
+      !phone ||
+      !category
     ) {
-      return res.status(400).json({
-        message: "All fields are required",
-      });
+      return res.status(400).json({ message: "All fields are required" });
     }
 
-    // ✅ Confirm password check
     if (password !== confirmPassword) {
       return res.status(400).json({
         message: "Password and confirm password do not match",
       });
     }
 
-    // ✅ Strong password (extra security)
-    const strongPassword =
-      password.length >= 8 &&
-      /[A-Z]/.test(password) &&
-      /[a-z]/.test(password) &&
-      /[0-9]/.test(password);
-
-    if (!strongPassword) {
-      return res.status(400).json({
-        message:
-          "Password must be at least 8 characters with uppercase, lowercase and number",
-      });
-    }
-
-    // ✅ Email already exists?
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return res.status(409).json({
-        message: "Email already registered",
-      });
+      return res.status(409).json({ message: "Email already registered" });
     }
 
-    // 🔐 Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // ✅ STEP 1: CREATE USER (MOST IMPORTANT)
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      role,
+      role: category,
       businessName,
+      phone,
+      category,
     });
 
-    // 🔥 ADD THIS BLOCK
+    const userId = user.id;
+
+    // ✅ STEP 2: Vendor table
     if (role === "vendor") {
       await Vendor.create({
-        userId: user.id,
-        name: businessName, // or name
-        category: "general", // default category (change as needed)
+        userId,
+        name: businessName,
+        category: category || "general",
       });
     }
+
+    // ✅ STEP 3: VendorProfile
+    await VendorProfile.create({
+      userId,
+      businessName,
+      ownerName: name,
+      email,
+      phone,
+      category,
+      experience: "",
+      location: "",
+      serviceLocations: "",
+    });
 
     const token = generateToken(user);
 
@@ -89,10 +94,13 @@ export const register = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        phone: user.phone,
+        category: user.category,
         role: user.role,
       },
     });
   } catch (error) {
+    console.error("Register Error:", error);
     return res.status(500).json({
       message: "Registration failed",
       error: error.message,
@@ -135,6 +143,7 @@ export const login = async (req, res) => {
         name: user.name,
         role: user.role,
         email: user.email,
+        phone: user.phone,
         profileImage, // 🔥 ADD THIS
       },
     });
@@ -143,15 +152,13 @@ export const login = async (req, res) => {
   }
 };
 
-
-
-
 // ==========================
 // ✅ REGISTER V2 (CLEAN)
 // ==========================
 export const registerV2 = async (req, res) => {
   try {
-    const { name, email, password, confirmPassword, role, businessName } = req.body;
+    const { name, email, password, confirmPassword, role, businessName } =
+      req.body;
 
     // Basic validation
     if (!name || !email || !password || !confirmPassword || !role) {
@@ -205,7 +212,6 @@ export const registerV2 = async (req, res) => {
       token,
       user,
     });
-
   } catch (err) {
     res.status(500).json({
       message: "Registration failed",
@@ -213,8 +219,6 @@ export const registerV2 = async (req, res) => {
     });
   }
 };
-
-
 
 // ==========================
 // ✅ LOGIN V2 (CLEAN)
@@ -260,11 +264,16 @@ export const loginV2 = async (req, res) => {
       message: "Login successful (v2)",
       token,
       user: {
-        ...user.toJSON(),
+        id: user.id,
+        name: user.name,
+        role: user.role,
+        email: user.email,
+        phone: user.phone,
+        category: user.category, // ✅ ADD THIS
+        businessName: user.businessName, // ✅ optional
         profileImage,
       },
     });
-
   } catch (err) {
     res.status(500).json({
       message: "Login failed",
