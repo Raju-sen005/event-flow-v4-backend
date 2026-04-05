@@ -6,9 +6,11 @@ import User from "../models/User.js";
 import VendorPackage from "../models/Package.js";
 import VendorProfile from "../models/VendorProfile.js";
 import Portfolio from "../models/Portfolio.js";
+import { sendEmail } from "../utils/sendEmail.js"
 /* =============================
    PLACE BID
 ============================= */
+
 
 export const placeBid = async (req, res) => {
   try {
@@ -31,12 +33,9 @@ export const placeBid = async (req, res) => {
       });
     }
 
-    // check existing bid
+    // ❌ existing bid check
     const existingBid = await Bid.findOne({
-      where: {
-        event_id,
-        vendor_id: vendorId,
-      },
+      where: { event_id, vendor_id: vendorId },
     });
 
     if (existingBid) {
@@ -47,11 +46,21 @@ export const placeBid = async (req, res) => {
     }
 
     /* =============================
+       ✅ EVENT FETCH (IMPORTANT)
+    ============================= */
+    const event = await Event.findByPk(event_id);
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found",
+      });
+    }
+
+    /* =============================
        FILES
     ============================= */
-
     const files = req.files;
-
     const portfolioSamples = files ? files.map((file) => file.filename) : [];
 
     const bid = await Bid.create({
@@ -65,6 +74,25 @@ export const placeBid = async (req, res) => {
       notes,
       portfolio_samples: portfolioSamples,
     });
+
+    /* =============================
+       ✅ EMAIL SEND WITH EVENT NAME
+    ============================= */
+
+    const vendor = await User.findByPk(vendorId);
+
+    await sendEmail(
+      vendor.email,
+      "Bid Placed Successfully 🎉",
+      `Congratulations! 🎉
+
+You have successfully placed a bid for the event: ${event.name}
+
+Package: ${package_name}
+Price: ₹${price}
+
+Best of luck! 🚀`
+    );
 
     res.status(201).json({
       success: true,

@@ -1,4 +1,5 @@
 import { Category, SubCategory } from "../../models/admin/index.js";
+import { Op } from "sequelize";
 
 const createCategory = async (req, res) => {
   try {
@@ -108,10 +109,37 @@ const subCategoryByCategory = async (req, res) => {
   }
 };
 
+
+const subCategoryByMultipleCategories = async (req, res) => {
+  try {
+    const { category_ids } = req.body;
+
+    const subCategories = await SubCategory.findAll({
+      where: {
+        category_id: {
+          [Op.in]: category_ids, // 🔥 multiple ids
+        },
+        status: true,
+      },
+    });
+
+    res.status(200).json({
+      status: true,
+      data: subCategories,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Something went wrong",
+      details: error.message,
+    });
+  }
+};
+
 export {
   createCategory,
   categoryList,
   createSubCategory,
   subCategoryList,
+  subCategoryByMultipleCategories,
   subCategoryByCategory,
 };
