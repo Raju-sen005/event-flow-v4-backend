@@ -4,6 +4,7 @@ import User from "../../models/User.js";
 
 // 🟢 CREATE PROFILE
 
+
 export const createVendorProfile = async (req, res) => {
   try {
     const exists = await VendorProfile.findOne({
@@ -15,10 +16,9 @@ export const createVendorProfile = async (req, res) => {
     }
 
     const user = await User.findByPk(req.user.id);
-
     const image = req.file ? `/${req.file.path}` : null;
 
-    const {
+    let {
       businessName,
       ownerName,
       experience,
@@ -28,7 +28,26 @@ export const createVendorProfile = async (req, res) => {
       email,
       description,
       serviceCategory,
+      serviceSubCategory,
     } = req.body;
+
+    // 🔥 PARSE CATEGORY
+    if (typeof serviceCategory === "string") {
+      try {
+        serviceCategory = JSON.parse(serviceCategory);
+      } catch {
+        serviceCategory = serviceCategory.split(",");
+      }
+    }
+
+    // 🔥 PARSE SUBCATEGORY
+    if (typeof serviceSubCategory === "string") {
+      try {
+        serviceSubCategory = JSON.parse(serviceSubCategory);
+      } catch {
+        serviceSubCategory = serviceSubCategory.split(",");
+      }
+    }
 
     const profile = await VendorProfile.create({
       userId: req.user.id,
@@ -42,9 +61,9 @@ export const createVendorProfile = async (req, res) => {
       description,
       profileImage: image,
 
-      // 🔥 FIX: category always from user
       category: user.category,
       serviceCategory,
+      serviceSubCategory,
     });
 
     res.status(201).json({
@@ -52,6 +71,7 @@ export const createVendorProfile = async (req, res) => {
       profile,
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Profile creation failed" });
   }
 };
@@ -75,6 +95,8 @@ export const getMyVendorProfile = async (req, res) => {
 };
 
 // 🟡 UPDATE PROFILE
+
+
 export const updateVendorProfile = async (req, res) => {
   try {
     const profile = await VendorProfile.findOne({
@@ -86,10 +108,9 @@ export const updateVendorProfile = async (req, res) => {
     }
 
     const user = await User.findByPk(req.user.id);
-
     const image = req.file ? `/${req.file.path}` : null;
 
-    const {
+    let {
       businessName,
       ownerName,
       experience,
@@ -98,7 +119,26 @@ export const updateVendorProfile = async (req, res) => {
       phone,
       email,
       description,
+      serviceCategory,
+      serviceSubCategory,
     } = req.body;
+
+    // 🔥 PARSE
+    if (typeof serviceCategory === "string") {
+      try {
+        serviceCategory = JSON.parse(serviceCategory);
+      } catch {
+        serviceCategory = serviceCategory.split(",");
+      }
+    }
+
+    if (typeof serviceSubCategory === "string") {
+      try {
+        serviceSubCategory = JSON.parse(serviceSubCategory);
+      } catch {
+        serviceSubCategory = serviceSubCategory.split(",");
+      }
+    }
 
     await profile.update({
       businessName,
@@ -111,9 +151,9 @@ export const updateVendorProfile = async (req, res) => {
       description,
       profileImage: image || profile.profileImage,
 
-      // 🔥 ALWAYS FORCE
       category: user.category,
-      serviceCategory: req.body.serviceCategory,
+      serviceCategory,
+      serviceSubCategory,
     });
 
     res.json({
@@ -121,6 +161,7 @@ export const updateVendorProfile = async (req, res) => {
       profile,
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Update failed" });
   }
 };
