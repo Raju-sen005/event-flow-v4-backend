@@ -32,7 +32,7 @@ const VendorProfile = sequelize.define(
 
     category: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
 
     serviceCategory: {
@@ -45,17 +45,17 @@ const VendorProfile = sequelize.define(
     },
     experience: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
 
     location: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
 
     serviceLocations: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
 
     phone: {

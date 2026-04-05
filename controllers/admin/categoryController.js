@@ -3,11 +3,15 @@ import { Op } from "sequelize";
 
 const createCategory = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name, image,description, meta_title, meta_desc, meta_keywords, meta_author } = req.body;
 
     await Category.create({
       name: name,
       description: description,
+      meta_title: meta_title,
+      meta_desc: meta_desc,
+      meta_keywords: meta_keywords,
+      meta_author: meta_author,
     });
 
     res.json({
