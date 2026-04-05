@@ -261,6 +261,11 @@ PoolEvent.hasMany(PoolBookedTicket, {
   foreignKey: "event_id",
   as: "tickets",
 });
+
+User.hasMany(PoolEvent, {
+  foreignKey: "event_id",
+  as: "events",
+});
 /* =======================
    EXPORTS
 ======================= */

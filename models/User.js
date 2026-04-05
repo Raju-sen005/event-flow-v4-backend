@@ -31,19 +31,19 @@ const User = sequelize.define(
       allowNull: true, // customer ke liye null
     },
 
-    phone: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isNumeric: true,
-        len: [10, 15],
-      },
-    },
+    // phone: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    //   validate: {
+    //     isNumeric: true,
+    //     len: [10, 15],
+    //   },
+    // },
 
-    category: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+    // category: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    // },
     role: {
       type: DataTypes.ENUM(
         "customer",
@@ -53,6 +53,15 @@ const User = sequelize.define(
       ),
       allowNull: false,
       defaultValue: "customer",
+    },
+    kyc: {
+      type: DataTypes.ENUM(
+        "pending",
+        "approved",
+        "rejected"
+      ),
+      allowNull: false,
+      defaultValue: "pending",
     },
   },
   {
