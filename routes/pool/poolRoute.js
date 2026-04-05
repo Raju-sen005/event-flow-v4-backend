@@ -12,11 +12,19 @@ import { vendorLogin,
      eventInventory,
      analytics,
      register,
-     updateSettings
+     updateSettings,
+     adminLogin,
+     getVendors
  } from "../../controllers/pool.controller.js";
 import {protect as authMiddleware} from "../../middleware/auth.middleware.js";
 const router = express.Router();
 
+// ADMIN ROUTES
+router.post("/admin-login", adminLogin);
+router.get("/vendor-list", authMiddleware, getVendors);
+
+
+// VENDOR ROUTES
 router.post("/vendor-login", vendorLogin);
 router.post("/vendor-register", register);
 router.post("/create-event", authMiddleware,createEvent);

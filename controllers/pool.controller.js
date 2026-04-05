@@ -9,6 +9,7 @@ import crypto from "crypto";
 import Razorpay from "razorpay";
 import dotenv from "dotenv";
 import Vendor from "../models/Vendor.js";
+import Admin from "../models/admin/admin.js";
 
 dotenv.config();
 
@@ -72,6 +73,35 @@ export const vendorLogin = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: "Login failed", error: err.message });
+  }
+};
+
+export const adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const admin = await Admin.findOne({ where: { email } });
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid password" });
+    }
+    const token = generateToken(admin);
+    res.json({
+        message: "Login successful",
+        token,
+        user: {
+          id: admin.id,
+          name: admin.name,
+          role: 'admin',
+          email: admin.email
+        },
+      });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Something went wrong", details: error.message });
   }
 };
 
@@ -663,3 +693,23 @@ export const updateSettings = async (req,res) => {
     });
   }
 }
+
+export const getVendors = async (req, res) => {
+  try {
+    
+    const vendors = await User.findAll({
+      where: { role: 'vendor' },
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.json({
+      success: true,
+      vendors,
+    });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ message: "Something went wrong!", error: err.message });
+  }
+};
