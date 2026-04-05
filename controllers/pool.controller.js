@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import Razorpay from "razorpay";
 import dotenv from "dotenv";
+import Vendor from "../models/Vendor.js";
 
 dotenv.config();
 
@@ -47,9 +48,10 @@ export const vendorLogin = async (req, res) => {
     const token = generateToken(user);
 
     let profileImage = null;
-
+    let profile = null;
+    
     if (user.role === "vendor") {
-      const profile = await VendorProfile.findOne({
+       profile = await VendorProfile.findOne({
         where: { userId: user.id },
       });
 
@@ -65,6 +67,7 @@ export const vendorLogin = async (req, res) => {
         role: user.role,
         email: user.email,
         profileImage, // 🔥 ADD THIS
+        phone: profile?.phone ?? null
       },
     });
   } catch (err) {
@@ -130,21 +133,21 @@ export const createEvent = async (req, res) => {
 
 export const getEvents = async (req, res) => {
   try {
-    const user_id = req.user?.id;
+    const user_id = req.user.id;
     let events;
-    // if (!user_id) {
-    //      // public events
-    //      events = await PoolEvent.findAll({
-    //      where: { status: "published" },
-    //      order: [["createdAt", "DESC"]],
-    //      });
-    // } else {
+    if (!user_id) {
+         // public events
+         events = await PoolEvent.findAll({
+         where: { status: "published" },
+         order: [["createdAt", "DESC"]],
+         });
+    } else {
     // vendor events
     events = await PoolEvent.findAll({
-      // where: { user_id },
+      where: { user_id },
       order: [["createdAt", "DESC"]],
     });
-    // }
+    }
 
     res.json({
       success: true,
@@ -344,19 +347,13 @@ export const getBookings = async (req, res) => {
   try {
     const user_id = req.user?.id;
     let bookings;
-    // if (!user_id) {
-    //      // public bookings
-    //      bookings = await PoolEvent.findAll({
-    //      where: { status: "published" },
-    //      order: [["createdAt", "DESC"]],
-    //      });
-    // } else {
-    // vendor bookings
+
     bookings = await PoolBookedTicket.findAll({
       include: [
         {
           model: PoolEvent,
           as: "event",
+          where: { user_id },
           attributes: [
             "id",
             "title",
@@ -369,7 +366,6 @@ export const getBookings = async (req, res) => {
       ],
       order: [["createdAt", "DESC"]],
     });
-    // }
 
     res.json({
       success: true,
@@ -384,6 +380,8 @@ export const getBookings = async (req, res) => {
 
 export const eventInventory = async (req,res) => {
   try {
+    const user_id = req.user?.id;
+
     const events = await PoolEvent.findAll({
       include: [
         {
@@ -394,7 +392,7 @@ export const eventInventory = async (req,res) => {
           as: "tickets",
         },
       ],
-      where: { status: "published" },
+      where: { status: "published",user_id : user_id },
       order: [["createdAt", "DESC"]],
     });
 
@@ -465,6 +463,7 @@ export const eventInventory = async (req,res) => {
 
 export const analytics = async (req, res) => {
   try {
+    const user_id = req.user?.id;
     // 🔥 events with bookings + capacity
     const events = await PoolEvent.findAll({
       include: [
@@ -474,7 +473,7 @@ export const analytics = async (req, res) => {
           as: "tickets",
         },
       ],
-      where: { status: "published" },
+      where: { status: "published", user_id : user_id },
     });
 
     // =========================
@@ -513,6 +512,13 @@ export const analytics = async (req, res) => {
     // =========================
     const bookings = await PoolBookedTicket.findAll({
       attributes: ["total_amount", "createdAt"],
+       include: [
+        {
+          model: PoolEvent,
+          as: "event",
+          where: { user_id },
+        },
+      ],
     });
 
     const monthNames = [
@@ -570,3 +576,90 @@ export const analytics = async (req, res) => {
     });
   }
 };
+
+
+export const register = async (req, res) => {
+  try {
+    const { name, email, phone, password, cnfpassword } = req.body;
+    const role = "vendor";
+
+    // Basic validation
+    if (!name || !email || !password || !cnfpassword  || !phone) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Role-based validation
+    if (role === "vendor" && !name) {
+      return res.status(400).json({
+        message: "Business name is required for vendor",
+      });
+    }
+
+    if (password !== cnfpassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    // Check existing
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role,
+      businessName: name,
+    });
+
+    // Vendor setup
+    if (role === "vendor") {
+      await Vendor.create({
+        userId: user.id,
+        name: name,
+        category: "general",
+      });
+
+      await VendorProfile.create({
+        userId: user.id,
+        businessName: user.name,
+        ownerName: user.name,
+        email: user.email,
+        phone: phone,
+      });
+    }
+
+    const token = generateToken(user);
+
+    return res.status(201).json({
+      message: "Registered successfully (v2)",
+      token,
+      user,
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Registration failed",
+      error: err.message,
+    });
+  }
+};
+
+export const updateSettings = async (req,res) => {
+  try {
+    const user_id = req.user?.id;
+
+    res.status(200).json({
+      message: "Profile updated successfull",
+      user : user_id
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Registration failed",
+      error: err.message,
+    });
+  }
+}
