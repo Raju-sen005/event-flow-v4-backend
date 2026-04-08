@@ -4,7 +4,6 @@ import User from "../../models/User.js";
 
 // 🟢 CREATE PROFILE
 
-
 export const createVendorProfile = async (req, res) => {
   try {
     const exists = await VendorProfile.findOne({
@@ -16,7 +15,13 @@ export const createVendorProfile = async (req, res) => {
     }
 
     const user = await User.findByPk(req.user.id);
-    const image = req.file ? `/${req.file.path}` : null;
+    const profileImage = req.files?.profileImage
+      ? "/" + req.files.profileImage[0].path.replace(/\\/g, "/")
+      : null;
+
+    const backgroundImage = req.files?.backgroundImage
+      ? "/" + req.files.backgroundImage[0].path.replace(/\\/g, "/")
+      : null;
 
     let {
       businessName,
@@ -59,7 +64,8 @@ export const createVendorProfile = async (req, res) => {
       phone,
       email,
       description,
-      profileImage: image,
+      profileImage,
+      backgroundImage,
 
       category: user.category,
       serviceCategory,
@@ -96,7 +102,6 @@ export const getMyVendorProfile = async (req, res) => {
 
 // 🟡 UPDATE PROFILE
 
-
 export const updateVendorProfile = async (req, res) => {
   try {
     const profile = await VendorProfile.findOne({
@@ -108,7 +113,13 @@ export const updateVendorProfile = async (req, res) => {
     }
 
     const user = await User.findByPk(req.user.id);
-    const image = req.file ? `/${req.file.path}` : null;
+    const profileImage = req.files?.profileImage
+      ? "/" + req.files.profileImage[0].path.replace(/\\/g, "/")
+      : null;
+
+    const backgroundImage = req.files?.backgroundImage
+      ? "/" + req.files.backgroundImage[0].path.replace(/\\/g, "/")
+      : null;
 
     let {
       businessName,
@@ -149,7 +160,8 @@ export const updateVendorProfile = async (req, res) => {
       phone,
       email,
       description,
-      profileImage: image || profile.profileImage,
+      profileImage: profileImage || profile.profileImage,
+      backgroundImage: backgroundImage || profile.backgroundImage, // ✅ ADD
 
       category: user.category,
       serviceCategory,

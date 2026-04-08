@@ -27,7 +27,6 @@ const getAllVendors = async (req, res) => {
     }
 
     const vendors = await VendorProfile.findAll({
-      
       where: whereClause,
 
       attributes: [
@@ -43,6 +42,8 @@ const getAllVendors = async (req, res) => {
         "email",
         "description",
         "createdAt",
+        "profileImage",
+        "backgroundImage",
       ],
 
       include: [
@@ -72,19 +73,19 @@ const getAllVendors = async (req, res) => {
 
       order: [["createdAt", "DESC"]],
     });
-const formattedVendors = vendors.map((v) => {
-  const data = v.toJSON();
+    const formattedVendors = vendors.map((v) => {
+      const data = v.toJSON();
 
-  return {
-    ...data,
-    image: data.portfolios?.[0]?.media?.[0]?.url || null,
-  };
-});
+      return {
+        ...data,
+        image: data.portfolios?.[0]?.media?.[0]?.url || null,
+      };
+    });
     return res.status(200).json({
-  success: true,
-  count: formattedVendors.length,
-  data: formattedVendors,
-});
+      success: true,
+      count: formattedVendors.length,
+      data: formattedVendors,
+    });
   } catch (error) {
     console.error("GET VENDORS ERROR:", error);
 
@@ -96,37 +97,36 @@ const formattedVendors = vendors.map((v) => {
   }
 };
 
-
 export const getVendorById = async (req, res) => {
   try {
     const { id } = req.params;
 
     const vendor = await VendorProfile.findByPk(id, {
-  include: [
-    {
-      model: Package,
-      as: "packages",
-      where: { status: "active" },
-      required: false,
-      attributes: ["id", "name", "price", "category"],
-    },
-    {
-      model: Portfolio,
-      as: "portfolios",
-      where: { status: "active" },
-      required: false,
-      attributes: ["id", "title", "category", "subCategory"],
       include: [
         {
-          model: PortfolioMedia,
-          as: "media",
-          attributes: ["url"],
+          model: Package,
+          as: "packages",
+          where: { status: "active" },
           required: false,
+          attributes: ["id", "name", "price", "category"],
+        },
+        {
+          model: Portfolio,
+          as: "portfolios",
+          where: { status: "active" },
+          required: false,
+          attributes: ["id", "title", "category", "subCategory"],
+          include: [
+            {
+              model: PortfolioMedia,
+              as: "media",
+              attributes: ["url"],
+              required: false,
+            },
+          ],
         },
       ],
-    },
-  ],
-});
+    });
 
     if (!vendor) {
       return res.status(404).json({
@@ -150,5 +150,5 @@ export const getVendorById = async (req, res) => {
 
 export default {
   getAllVendors,
-  getVendorById
+  getVendorById,
 };
