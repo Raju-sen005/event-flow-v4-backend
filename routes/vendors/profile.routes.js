@@ -9,7 +9,9 @@ import {
   updateVendorProfile,
   deleteVendorProfile,
 } from "../../controllers/vendors/profile.controller.js";
-import upload from "../../middleware/profileUpload.js";
+// import upload from "../../middleware/profileUpload.js";
+import { uploadProfileImages } from "../../middleware/profileUpload.js";
+
 
 const router = express.Router();
 
@@ -22,10 +24,12 @@ router.use(
   authorizeRoles("vendor", "event-planner", "freelance-planner"),
 );
 // console.log("HIT PROFILE ROUTE");
-router.post("/", upload.single("profileImage"), createVendorProfile);
+// router.post("/", upload.single("profileImage"), createVendorProfile);
+router.post("/", protect, uploadProfileImages, createVendorProfile);
 // router.post("/", createVendorProfile);
 router.get("/", getMyVendorProfile);
-router.put("/", upload.single("profileImage"), updateVendorProfile);
+router.put("/", protect, uploadProfileImages, updateVendorProfile);
+// router.put("/", upload.single("profileImage"), updateVendorProfile);
 // router.put("/", updateVendorProfile);
 router.delete("/", deleteVendorProfile);
 

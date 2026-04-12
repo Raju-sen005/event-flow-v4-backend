@@ -25,6 +25,10 @@ const VendorProfile = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    backgroundImage: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     ownerName: {
       type: DataTypes.STRING,
       allowNull: false,

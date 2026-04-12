@@ -1,4 +1,3 @@
-// middleware/profileUpload.js
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -16,9 +15,17 @@ const storage = multer.diskStorage({
     cb(null, folder);
   },
   filename: (req, file, cb) => {
-    const unique = Date.now() + path.extname(file.originalname);
+    const unique = Date.now() + "-" + file.fieldname + path.extname(file.originalname);
     cb(null, unique);
   }
 });
 
-export default multer({ storage });
+const upload = multer({ storage });
+
+// ✅ EXPORT fields version
+export const uploadProfileImages = upload.fields([
+  { name: "profileImage", maxCount: 1 },
+  { name: "backgroundImage", maxCount: 1 },
+]);
+
+export default upload;
