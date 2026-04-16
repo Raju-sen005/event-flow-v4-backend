@@ -163,7 +163,7 @@ export const updateVendorProfile = async (req, res) => {
       profileImage: profileImage || profile.profileImage,
       backgroundImage: backgroundImage || profile.backgroundImage, // ✅ ADD
 
-      category: user.category,
+      // category: user.category,
       serviceCategory,
       serviceSubCategory,
     });
@@ -173,6 +173,8 @@ export const updateVendorProfile = async (req, res) => {
       profile,
     });
   } catch (err) {
+    console.error("UPDATE ERROR:", err);
+  console.error("ERROR DETAILS:", err.message);
     console.error(err);
     res.status(500).json({ message: "Update failed" });
   }

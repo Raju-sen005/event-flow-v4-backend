@@ -26,6 +26,7 @@ import supportRoutes from "./routes/support.routes.js";
 import vendorAvailability from "./routes/vendorAvailabilityRoutes.js"
 import vendorSettingsRoutes from "./routes/vendorSettingsRoutes.js";
 import poolRoutes from "./routes/pool/poolRoute.js"
+import negotiationRoutes from "./routes/negotionRoutes.js";
 
 dotenv.config();
 
@@ -59,6 +60,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/support",supportRoutes);
 app.use("/api/vendor/availability", vendorAvailability)
 app.use("/api/vendor/settings", vendorSettingsRoutes);
+app.use("/api/negotiation", negotiationRoutes);
 
 app.use("/api/pool", poolRoutes);
 

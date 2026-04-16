@@ -1,4 +1,5 @@
 import { Op } from "sequelize";
+import { Event } from "../models/index.js";
 import {
   VendorProfile,
   Package,
@@ -6,6 +7,7 @@ import {
   PortfolioMedia,
 } from "../models/index.js";
 // import PortfolioMedia from "../models/PortfolioMedia.js";
+
 
 const getAllVendors = async (req, res) => {
   try {
@@ -148,7 +150,41 @@ export const getVendorById = async (req, res) => {
   }
 };
 
+export const getVendorsByEvent = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    const event = await Event.findByPk(eventId);
+
+    if (!event) {
+      return res.status(404).json({ success: false });
+    }
+
+    console.log("EVENT:", event.toJSON());
+
+    // 🔥 TEMP FIX: show all vendors (no filter)
+    const vendors = await VendorProfile.findAll({
+      include: [
+        {
+          model: Package,
+          as: "packages",
+          required: false,
+        },
+      ],
+    });
+
+    res.json({
+      success: true,
+      data: vendors,
+    });
+  } catch (err) {
+    console.error("EVENT VENDOR ERROR:", err);
+    res.status(500).json({ success: false });
+  }
+};
+
 export default {
   getAllVendors,
   getVendorById,
+  getVendorsByEvent,
 };

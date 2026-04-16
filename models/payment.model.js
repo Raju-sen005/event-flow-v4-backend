@@ -9,17 +9,17 @@ const Payment = sequelize.define("Payment", {
   },
 
   eventId: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     allowNull: false
   },
 
   vendorId: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     allowNull: false
   },
 
   customerId: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     allowNull: false
   },
 

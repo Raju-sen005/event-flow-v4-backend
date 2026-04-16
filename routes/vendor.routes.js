@@ -5,4 +5,5 @@ const router = express.Router();
 
 router.get("/", vendorController.getAllVendors);
 router.get("/:id", vendorController.getVendorById);
+router.get("/event/:eventId", vendorController.getVendorsByEvent);
 export default router;

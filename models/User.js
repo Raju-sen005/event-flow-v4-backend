@@ -33,7 +33,7 @@ const User = sequelize.define(
 
     phone: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       validate: {
         isNumeric: true,
         len: [10, 15],
@@ -42,7 +42,7 @@ const User = sequelize.define(
 
     category: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     role: {
       type: DataTypes.ENUM(

@@ -258,6 +258,7 @@ export const getBidById = async (req, res) => {
             {
               model: VendorProfile,
               attributes: [
+                "id",
                 "profileImage",
                 "category",
                 "experience",
