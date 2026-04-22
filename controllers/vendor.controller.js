@@ -1,4 +1,5 @@
 import { Op } from "sequelize";
+import sequelize from "../config/db.js";
 import { Event } from "../models/index.js";
 import {
   VendorProfile,
@@ -8,10 +9,9 @@ import {
 } from "../models/index.js";
 // import PortfolioMedia from "../models/PortfolioMedia.js";
 
-
 const getAllVendors = async (req, res) => {
   try {
-    const { search, category } = req.query;
+    const { search, serviceCategory } = req.query;
 
     const whereClause = {};
 
@@ -24,8 +24,12 @@ const getAllVendors = async (req, res) => {
     }
 
     // 📂 Category filter
-    if (category && category !== "all") {
-      whereClause.category = category;
+    if (serviceCategory && serviceCategory !== "all") {
+      whereClause[Op.and] = [
+        sequelize.literal(
+          `JSON_SEARCH(serviceCategory, 'one', ${sequelize.escape(serviceCategory)}) IS NOT NULL`,
+        ),
+      ];
     }
 
     const vendors = await VendorProfile.findAll({
@@ -37,6 +41,7 @@ const getAllVendors = async (req, res) => {
         "businessName",
         "ownerName",
         "category",
+        "serviceCategory",
         "experience",
         "location",
         "serviceLocations",

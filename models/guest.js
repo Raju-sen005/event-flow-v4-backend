@@ -20,7 +20,7 @@ const Guest = sequelize.define(
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     phone: {
       type: DataTypes.STRING,
@@ -30,11 +30,19 @@ const Guest = sequelize.define(
       type: DataTypes.STRING, // family, friend, vip, etc
       allowNull: false,
     },
+    status: {
+      type: DataTypes.ENUM("pending", "confirmed", "declined"),
+      defaultValue: "pending",
+    },
+    invited: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     tableName: "guests",
     timestamps: true,
-  }
+  },
 );
 
 export default Guest;

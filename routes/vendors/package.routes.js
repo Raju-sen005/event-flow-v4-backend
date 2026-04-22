@@ -2,6 +2,7 @@ import express from "express";
 import {
   createPackage,
   getPackages,
+  getPackageById,
   updatePackage,
   deletePackage,
   togglePackageStatus
@@ -24,7 +25,7 @@ router.post(
 
 // ✅ GET
 router.get("/", protect, getPackages);
-
+router.get("/:id", getPackageById);
 // ✅ UPDATE (with upload)
 router.put(
   "/:id",

@@ -27,6 +27,9 @@ import vendorAvailability from "./routes/vendorAvailabilityRoutes.js"
 import vendorSettingsRoutes from "./routes/vendorSettingsRoutes.js";
 import poolRoutes from "./routes/pool/poolRoute.js"
 import negotiationRoutes from "./routes/negotionRoutes.js";
+import packageRoutes from "./routes/vendors/package.routes.js";
+import invitationRoutes from "./routes/invitation.routes.js";
+import templateRoutes from "./routes/template.routes.js";
 
 dotenv.config();
 
@@ -61,9 +64,10 @@ app.use("/api/support",supportRoutes);
 app.use("/api/vendor/availability", vendorAvailability)
 app.use("/api/vendor/settings", vendorSettingsRoutes);
 app.use("/api/negotiation", negotiationRoutes);
-
+app.use("/api/packages", packageRoutes);
 app.use("/api/pool", poolRoutes);
-
+app.use("/api/invitations", invitationRoutes);
+app.use("/api/templates", templateRoutes);
 // const server = https.createServer({
 //   key: fs.readFileSync("/home/gogatherhub/public_html/ssl/privkey.pem"),
 //   cert: fs.readFileSync("/home/gogatherhub/public_html/ssl/cert.pem"),

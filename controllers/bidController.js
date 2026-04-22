@@ -6,11 +6,11 @@ import User from "../models/User.js";
 import VendorPackage from "../models/Package.js";
 import VendorProfile from "../models/VendorProfile.js";
 import Portfolio from "../models/Portfolio.js";
-import { sendEmail } from "../utils/sendEmail.js"
+import { sendEmail } from "../utils/sendEmail.js";
+import Package from "../models/Package.js";
 /* =============================
    PLACE BID
 ============================= */
-
 
 export const placeBid = async (req, res) => {
   try {
@@ -91,7 +91,7 @@ You have successfully placed a bid for the event: ${event.name}
 Package: ${package_name}
 Price: ₹${price}
 
-Best of luck! 🚀`
+Best of luck! 🚀`,
     );
 
     res.status(201).json({
@@ -251,6 +251,10 @@ export const getBidById = async (req, res) => {
           ],
         },
         {
+          model: Package,
+          attributes: ["id", "inclusions"],
+        },
+        {
           model: User,
           as: "vendor",
           attributes: ["id", "name", "email"],
@@ -261,6 +265,7 @@ export const getBidById = async (req, res) => {
                 "id",
                 "profileImage",
                 "category",
+                "serviceSubCategory",
                 "experience",
                 "location",
               ],

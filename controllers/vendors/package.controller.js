@@ -1,5 +1,6 @@
 import Package from "../../models/Package.js";
-import { VendorProfile } from "../../models/index.js";
+// import { VendorProfile } from "../../models/index.js";
+import { VendorProfile, Event } from "../../models/index.js";
 
 /**
  * 🔥 SAFE PARSE FUNCTION
@@ -125,6 +126,41 @@ export const getPackages = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch packages",
+    });
+  }
+};
+
+export const getPackageById = async (req, res) => {
+  try {
+    const data = await Package.findByPk(req.params.id, {
+      include: [
+        {
+          model: VendorProfile,
+          as: "vendor",
+          attributes: ["id", "ownerName", "email", "phone"],
+        },
+        // {
+        //   model: Event,
+        //   attributes: ["id", "name", "date"],
+        // },
+      ],
+    });
+
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: "Package not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };

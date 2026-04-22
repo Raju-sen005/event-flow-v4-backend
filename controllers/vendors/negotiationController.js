@@ -124,7 +124,36 @@ export const finalizeVendor = async (req, res) => {
   try {
     const { bidId } = req.body;
 
-    // 🔥 bid update
+    // 🔍 negotiation find karo
+    const negotiation = await Negotiation.findOne({
+      where: { bid_id: bidId },
+    });
+
+    // ❌ agar negotiation hi nahi hai
+    if (!negotiation) {
+      return res.status(400).json({
+        success: false,
+        message: "Please complete negotiation before finalizing vendor",
+      });
+    }
+
+    // ❌ agar accepted nahi hua
+    if (negotiation.status !== "accepted") {
+      return res.status(400).json({
+        success: false,
+        message: "Please accept an offer before finalizing vendor",
+      });
+    }
+
+    // ❌ safety: finalized price check
+    if (!negotiation.finalized_price) {
+      return res.status(400).json({
+        success: false,
+        message: "Final price not set",
+      });
+    }
+
+    // ✅ sab sahi → finalize
     await Bid.update(
       {
         status: "accepted",

@@ -119,6 +119,17 @@ Package.belongsTo(VendorProfile, {
   as: "vendor",
 });
 
+// 🔥 ADD THIS
+Bid.belongsTo(Package, {
+  foreignKey: "id",
+});
+
+Package.hasMany(Bid, {
+  foreignKey: "id",
+});
+
+Guest.belongsTo(Event, { foreignKey: "event_id" });
+Event.hasMany(Guest, { foreignKey: "event_id" });
 /* =======================
    PORTFOLIO
 ======================= */
@@ -286,5 +297,5 @@ export {
   VendorSettings,
   PortfolioMedia,
   PoolEvent,
-  PoolEventTicket
+  PoolEventTicket,
 };
